@@ -1,0 +1,100 @@
+name: Build geosite files
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "20 23 * * *"
+  push:
+    branches:
+      - main
+
+env: 
+  TZ: Asia/Hong_Kong
+
+concurrency: 
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Workflow runs delete
+        uses: InfraWay/delete-workflow-runs@v2.1.2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 0
+          keep_minimum_runs: 3
+
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout hidden branch
+        uses: actions/checkout@v4
+        with:
+          ref: hidden
+          path: custom
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: ./go.mod
+
+      - name: Get data
+        run: |
+          git clone https://github.com/v2fly/domain-list-community code
+          mv code/data ./
+          rm -rf code
+        shell: bash
+
+      - name: Custom modification
+        run: |
+          curl -sSL "https://github.com/crazy-max/WindowsSpyBlocker/raw/master/data/hosts/update.txt" | grep "0.0.0.0" | awk '{print $2}' > ./data/win-update
+          sed -i '/include:tld-!cn/d' ./data/geolocation-!cn
+          mv ./custom/nivodtv.txt ./data/nivodtv
+          echo "include:nivodtv" >> ./data/geolocation-!cn
+          cat ./custom/custom_direct.txt >> ./data/geolocation-cn
+        shell: bash
+
+      - name: Create necessary directories
+        run: |
+          mkdir -p ./publish/sing-rule ./tools
+        shell: bash
+
+      - name: Build geo files
+        run: |
+          go run ./ --outputdir=./publish/
+
+      - name: Convert db and metadb file
+        if: success()
+        run: |
+          curl -sSL https://github.com/d2184/geo/releases/download/latest/geo-linux-amd64 -o ./geo && chmod +x ./geo
+          ./geo convert site -i v2ray -o sing -f ./publish/geosite.db ./publish/geosite.dat
+        shell: bash
+
+      - name: Convert sing-rule-set
+        env:
+          NO_SKIP: true
+        run: |
+          curl -sSL https://github.com/SagerNet/sing-box/releases/download/v1.8.0/sing-box-1.8.0-linux-amd64.tar.gz -o ./tools/sing-box.tar.gz && cd ./tools && tar zxvf sing-box.tar.gz && mv sing-box-1.8.0-linux-amd64/sing-box ../ && cd .. && rm -rf ./tools
+          chmod +x ./sing-box
+          list=($(./sing-box geosite list -f ./publish/geosite.db | sed 's/ (.*)$//g'))
+          for ((i = 0; i < ${#list[@]}; i++)); do
+            ./sing-box geosite export ${list[i]} -f ./publish/geosite.db -o ./${list[i]}.json
+            ./sing-box rule-set compile ./${list[i]}.json -o ./publish/sing-rule/${list[i]}.srs
+          done
+        shell: bash
+
+      - name: Publish
+        run: |
+          cd publish || exit 1
+          git init --initial-branch=release
+          git config --local user.name "${{ github.actor }}"
+          git config --local user.email "${{ github.actor }}@users.noreply.github.com"
+          git add -A
+          git commit -m "Last Updated $(date '+%Y-%m-%d %H:%M:%S')"
+          git remote add geosite "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          git push -f -u geosite release
