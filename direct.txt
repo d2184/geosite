@@ -1,0 +1,39 @@
+# 我爱我家
+5i5j.com
+
+# Appshare
+muge.info
+appshare.vip
+
+# 乐享
+lxapk.com
+
+# Microsoft Outlook Email
+full:m.hotmail.com
+full:login.live.com
+full:imap-mail.outlook.com
+full:smtp-mail.outlook.com
+
+# Github 代理
+full:mirror.ghproxy.com
+
+# 金豆游戏厅
+full:jindouyxt.com
+xdgame.com
+full:img.quankexia.com
+full:jdgame.vip
+
+# 克隆窝
+uy5.net
+
+# 异星软件
+lan-sha.com
+yxssp.com
+
+# taptap
+tapdb.net
+tapsvc.com
+
+# 华为天气
+full:hw.zuimeitianqi.com
+full:api.weathercn.com
