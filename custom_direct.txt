@@ -1,0 +1,44 @@
+# 423下载站
+423down.com
+
+# 我爱我家
+5i5j.com
+
+# Appshare
+muge.info
+keyword:appshare
+
+# 乐享
+lxapk.com
+
+# 米哈游
+mihoyo.com
+miyoushe.com
+
+# Microsoft Exchange Email
+full:m.hotmail.com
+full:login.live.com
+
+# Github 代理
+full:mirror.ghproxy.com
+
+# 金豆游戏厅
+full:jindouyxt.com
+xdgame.com
+full:img.quankexia.com
+full:jdgame.vip
+
+# 克隆窝
+uy5.net
+
+# 异星软件
+lan-sha.com
+yxssp.com
+
+# taptap
+tapdb.net
+taptapdada.com
+
+starlik.top
+
+full:api.webtest.net
