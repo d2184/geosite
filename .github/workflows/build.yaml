@@ -57,7 +57,21 @@ jobs:
 
       - name: Build
         run: |
-          go run ./ --outputdir=./publish/
+          mkdir -p ./publish/text
+          go run ./ --outputdir=./publish/ --exportlists=private,tld-cn,geolocation-cn,geolocation-\!cn,category-games
+
+      - name: Generate text rule-set
+        run: |
+          sed 's/domain:/./' ./publish/tld-cn.txt > ./publish/text/cn.txt
+          sed '/^domain:\|^full:/!d; /^$/d; s/full:\|:@.*//; s/domain:/+./' ./publish/geolocation-cn.txt >> ./publish/text/cn.txt
+
+          sed '/^domain:\|^full:/!d; /^$/d; s/full:\|:@.*//; s/domain:/+./' ./publish/geolocation-\!cn.txt > ./publish/text/geolocation-\!cn.txt
+          echo -e "+.nbyy.cc\n+.nivod4.tv\n+.nivod.tv\n+.nivod6.tv\n+.nivod7.tv\n+.nivodz.com\n+.nivod.cc" >> ./publish/text/geolocation-\!cn.txt
+
+          grep -v ":@cn" ./publish/category-games.txt | sed '/^domain:\|^full:/!d; /^$/d; s/full:\|:@.*//; s/domain:/+./' > ./publish/text/games-cn.txt
+
+          sed '/^domain:\|^full:/!d; /^$/d; s/full://; s/domain:/+./' ./publish/private.txt > ./publish/text/private.txt
+          rm ./publish/*.txt
 
       - name: Generate db and metadb files
         if: success()
