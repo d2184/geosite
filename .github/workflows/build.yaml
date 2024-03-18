@@ -66,6 +66,19 @@ jobs:
           ./geo convert site -i v2ray -o sing -f ./publish/geosite.db ./publish/geosite.dat
         shell: bash
 
+      - name: Generate sing-box rule-set
+        run: |
+          mkdir -p ./publish/sing-rule ./tools
+          curl -sSL https://github.com/SagerNet/sing-box/releases/download/v1.8.8/sing-box-1.8.8-linux-amd64.tar.gz -o ./tools/sing-box.tar.gz && tar zxvf ./tools/sing-box.tar.gz -C ./tools && mv ./tools/sing-box-1.8.8-linux-amd64/sing-box ./
+          rm -rf ./tools && chmod +x ./sing-box
+
+          list=($(./sing-box geosite list -f ./publish/geosite.db | sed 's/ (.*)$//g'))
+          for ((i = 0; i < ${#list[@]}; i++)); do
+            ./sing-box geosite export ${list[i]} -f ./publish/geosite.db -o ./${list[i]}.json
+            ./sing-box rule-set compile ./${list[i]}.json -o ./publish/sing-rule/${list[i]}.srs
+          done
+        shell: bash
+
       - name: Publish
         run: |
           cd publish || exit 1
