@@ -59,6 +59,13 @@ jobs:
         run: |
           go run ./ --outputdir=./publish/
 
+      - name: Generate db and metadb files
+        if: success()
+        run: |
+          curl -sSL https://github.com/d2184/geo/releases/download/latest/geo-linux-amd64 -o ./geo && chmod +x ./geo
+          ./geo convert site -i v2ray -o sing -f ./publish/geosite.db ./publish/geosite.dat
+        shell: bash
+
       - name: Publish
         run: |
           cd publish || exit 1
