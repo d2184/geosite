@@ -1,0 +1,71 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 23 * * *"
+  push:
+    branches:
+      - main
+      - custom
+
+env: 
+  TZ: Asia/Shanghai
+
+concurrency: 
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  Build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Workflow runs delete
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 0
+          keep_minimum_runs: 2
+
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          check-latest: true
+
+      - name: Get Data
+        run: |
+          git clone https://github.com/v2fly/domain-list-community repo && mv repo/data ./ && rm -rf repo
+        shell: bash
+
+      - name: Append more domains
+        run: |
+          curl -LR -o- "https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Surge/NivodTV/NivodTV.list" | grep -v "#" | sed 's/DOMAIN-SUFFIX,//g; s/DOMAIN-KEYWORD,/keyword:/g' > data/nivodtv
+          echo "full:c.olddddd.com" >> data/nivodtv
+          echo "include:nivodtv" >> ./data/geolocation-\!cn
+          sed -i '/:@!cn/d' ./data/geolocation-cn
+          curl -LR -o- "https://github.com/d2184/geosite/raw/custom/direct.txt" | grep -v "#" >> ./data/geolocation-cn
+          sed -i '/:@cn/d' ./data/geolocation-\!cn
+        shell: bash
+
+      - name: Build
+        run: |
+          go run ./ --outputdir=./publish/
+
+      - name: Publish
+        run: |
+          cd publish || exit 1
+          git init --initial-branch=release
+          git config --local user.name "${{ github.actor }}"
+          git config --local user.email "${{ github.actor }}@users.noreply.github.com"
+          git add -A
+          git commit -m "Last Updated $(date '+%Y-%m-%d %H:%M:%S')"
+          git remote add geosite "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          git push -f -u geosite release
