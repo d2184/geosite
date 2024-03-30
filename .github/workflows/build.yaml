@@ -64,14 +64,14 @@ jobs:
       - name: Generate text rule-set
         run: |
           sed 's/domain:/DOMAIN-SUFFIX,/' ./publish/tld-cn.txt > ./publish/text/cn.txt
-          sed 's/:@.*//; /,/d; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/geolocation-cn.txt >> ./publish/text/cn.txt
-          sed 's/:@.*//; /,/d; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/geolocation-\!cn.txt > ./publish/text/geolocation-\!cn.txt
-          sed 's/:@.*//; /,/d; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/category-porn.txt > ./publish/text/category-porn.txt
-          grep -v ":@cn" ./publish/category-games.txt | sed 's/:@.*//; /,/d; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' > ./publish/text/games-cn.txt
-          sed '/,/d; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/private.txt > ./publish/text/private.txt
+          sed 's/:@.*//; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/geolocation-cn.txt >> ./publish/text/cn.txt
+          sed 's/:@.*//; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/geolocation-\!cn.txt > ./publish/text/geolocation-\!cn.txt
+          sed 's/:@.*//; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/category-porn.txt > ./publish/text/category-porn.txt
+          grep -v ":@cn" ./publish/category-games.txt | sed 's/:@.*//; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' > ./publish/text/games-cn.txt
+          sed 's/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/private.txt > ./publish/text/private.txt
           curl -LR -o- "https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Surge/NivodTV/NivodTV.list" | grep -v "#" > publish/text/nivodtv.txt
           echo "DOMAIN,c.olddddd.com" >> publish/text/nivodtv.txt
-          sed 's/:@.*//; /,/d; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/youtube.txt > publish/text/youtube.txt
+          sed 's/:@.*//; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/youtube.txt > publish/text/youtube.txt
           rm ./publish/*.txt
 
       - name: Generate db and metadb files
