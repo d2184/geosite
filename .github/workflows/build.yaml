@@ -49,7 +49,7 @@ jobs:
       - name: Append more domains
         run: |
           curl -LR -o- "https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Surge/NivodTV/NivodTV.list" | grep -v "#" | sed 's/DOMAIN-SUFFIX,/domain:/g; s/DOMAIN-KEYWORD,/keyword:/g' > data/nivodtv
-          echo "full:c.olddddd.com" >> data/nivodtv
+          echo "domain:olddddd.com" >> data/nivodtv
           echo "include:nivodtv" >> ./data/geolocation-\!cn
           sed -i '/:@!cn/d' ./data/geolocation-cn
           curl -LR -o- "https://github.com/d2184/geosite/raw/custom/direct.txt" | grep -v "#" >> ./data/geolocation-cn
@@ -84,13 +84,14 @@ jobs:
       - name: Generate sing-box rule-set
         run: |
           mkdir -p ./publish/sing-rule ./tools
-          curl -sSL https://github.com/SagerNet/sing-box/releases/download/v1.8.8/sing-box-1.8.8-linux-amd64.tar.gz -o ./tools/sing-box.tar.gz && tar zxvf ./tools/sing-box.tar.gz -C ./tools && mv ./tools/sing-box-1.8.8-linux-amd64/sing-box ./
+          curl -sSL https://github.com/SagerNet/sing-box/releases/download/v1.8.14/sing-box-1.8.14-linux-amd64.tar.gz -o ./tools/sing-box.tar.gz && tar zxvf ./tools/sing-box.tar.gz -C ./tools && mv ./tools/sing-box-1.8.14-linux-amd64/sing-box ./
           rm -rf ./tools && chmod +x ./sing-box
 
           list=($(./sing-box geosite list -f ./publish/geosite.db | sed 's/ (.*)$//g'))
           for ((i = 0; i < ${#list[@]}; i++)); do
             ./sing-box geosite export ${list[i]} -f ./publish/geosite.db -o ./${list[i]}.json
             ./sing-box rule-set compile ./${list[i]}.json -o ./publish/sing-rule/${list[i]}.srs
+            echo "write: ./publish/sing-rule/${list[i]}.srs"
           done
         shell: bash
 
