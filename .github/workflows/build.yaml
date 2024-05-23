@@ -59,7 +59,7 @@ jobs:
       - name: Build
         run: |
           mkdir -p ./publish/text
-          go run ./ --outputdir=./publish/ --exportlists=private,tld-cn,geolocation-cn,geolocation-\!cn,category-games,category-porn,youtube
+          go run ./ --outputdir=./publish/ --exportlists=private,tld-cn,geolocation-cn,geolocation-\!cn,category-games,category-porn,youtube,nivodtv
 
       - name: Generate text rule-set
         run: |
@@ -69,8 +69,7 @@ jobs:
           sed 's/:@.*//; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/category-porn.txt > ./publish/text/category-porn.txt
           grep -v ":@cn" ./publish/category-games.txt | sed 's/:@.*//; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' > ./publish/text/games-cn.txt
           sed 's/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/private.txt > ./publish/text/private.txt
-          curl -LR -o- "https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Surge/NivodTV/NivodTV.list" | grep -v "#" > publish/text/nivodtv.txt
-          echo "DOMAIN,c.olddddd.com" >> publish/text/nivodtv.txt
+          sed 's/:@.*//; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/nivodtv.txt > publish/text/nivodtv.txt
           sed 's/:@.*//; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/youtube.txt > publish/text/youtube.txt
           rm ./publish/*.txt
 
