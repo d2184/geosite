@@ -59,43 +59,31 @@ jobs:
       - name: Build
         run: |
           mkdir -p ./publish/text
-          go run ./ --outputdir=./publish/ --exportlists=private,tld-cn,geolocation-cn,geolocation-\!cn,category-games,category-porn,youtube,nivodtv
-
-      - name: Generate text rule-set
-        run: |
-          sed 's/domain:/DOMAIN-SUFFIX,/' ./publish/tld-cn.txt > ./publish/text/cn.txt
-          sed 's/:@.*//; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/geolocation-cn.txt >> ./publish/text/cn.txt
-          sed 's/:@.*//; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/geolocation-\!cn.txt > ./publish/text/geolocation-\!cn.txt
-          sed 's/:@.*//; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/category-porn.txt > ./publish/text/category-porn.txt
-          grep -v ":@cn" ./publish/category-games.txt | sed 's/:@.*//; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' > ./publish/text/games-cn.txt
-          sed 's/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/private.txt > ./publish/text/private.txt
-          sed 's/:@.*//; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/keyword:/DOMAIN-KEYWORD,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/nivodtv.txt > publish/text/nivodtv.txt
-          sed 's/:@.*//; s/full:/DOMAIN,/; s/domain:/DOMAIN-SUFFIX,/; s/regexp:/DOMAIN-REGEX,/; /^$/d' ./publish/youtube.txt > publish/text/youtube.txt
-          rm ./publish/*.txt
+          go run ./ --outputdir=./publish/
 
       - name: Generate db and metadb files
         if: success()
         run: |
-          curl -sSL https://github.com/d2184/geo/releases/download/latest/geo-linux-amd64 -o ./geo && chmod +x ./geo
+          curl -sSL https://github.com/d2184/convert-tools/releases/download/PreRealease-geo/geo-linux-amd64 -o ./geo && chmod +x ./geo
           ./geo convert site -i v2ray -o sing -f ./publish/geosite.db ./publish/geosite.dat
         shell: bash
 
-      - name: Generate sing-box rule-set
+      - name: Generate sing-box and mihomo rule-set
         run: |
-          mkdir -p ./publish/sing-rule ./tools
-          curl -sSL https://github.com/SagerNet/sing-box/releases/download/v1.8.14/sing-box-1.8.14-linux-amd64.tar.gz -o ./tools/sing-box.tar.gz && tar zxvf ./tools/sing-box.tar.gz -C ./tools && mv ./tools/sing-box-1.8.14-linux-amd64/sing-box ./
-          rm -rf ./tools && chmod +x ./sing-box
+          curl -sSL https://github.com/d2184/convert-tools/releases/download/PreRealease-convert/convert-linux-amd64 -o ./convert && chmod +x ./convert
 
-          list=($(./sing-box geosite list -f ./publish/geosite.db | sed 's/ (.*)$//g'))
-          for ((i = 0; i < ${#list[@]}; i++)); do
-            ./sing-box geosite export ${list[i]} -f ./publish/geosite.db -o ./${list[i]}.json
-            ./sing-box rule-set compile ./${list[i]}.json -o ./publish/sing-rule/${list[i]}.srs
-            echo "write: ./publish/sing-rule/${list[i]}.srs"
-          done
+          mkdir -p ./sing-box
+          ./convert geosite -f ./publish/geosite.dat -o ./sing-box -t sing-box
+
+          mkdir -p ./mihomo
+          ./convert geosite -f ./publish/geosite.dat -o ./mihomo
+
+          cd mihomo && mkdir -p ./domain && mv -f ./*.list ./*.yaml ./domain/ && cd ..
         shell: bash
 
       - name: Publish
         run: |
+          mv -f ./sing-box ./mihomo ./publish/
           cd publish || exit 1
           git init --initial-branch=release
           git config --local user.name "${{ github.actor }}"
