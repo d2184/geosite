@@ -61,13 +61,6 @@ jobs:
           mkdir -p ./publish/text
           go run ./ --outputdir=./publish/
 
-      - name: Generate db and metadb files
-        if: success()
-        run: |
-          curl -sSL https://github.com/d2184/convert-tools/releases/download/PreRealease-geo/geo-linux-amd64 -o ./geo && chmod +x ./geo
-          ./geo convert site -i v2ray -o sing -f ./publish/geosite.db ./publish/geosite.dat
-        shell: bash
-
       - name: Generate sing-box and mihomo rule-set
         run: |
           curl -sSL https://github.com/d2184/convert-tools/releases/download/PreRealease-convert/convert-linux-amd64 -o ./convert && chmod +x ./convert
