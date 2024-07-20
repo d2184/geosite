@@ -8,12 +8,6 @@ appshare.vip
 # 乐享
 lxapk.com
 
-# Microsoft Outlook Email
-full:m.hotmail.com
-full:login.live.com
-full:imap-mail.outlook.com
-full:smtp-mail.outlook.com
-
 # Github 代理
 full:mirror.ghproxy.com
 
