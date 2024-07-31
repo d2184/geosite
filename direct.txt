@@ -31,3 +31,6 @@ tapsvc.com
 # 华为天气
 full:hw.zuimeitianqi.com
 full:api.weathercn.com
+
+# Go 代理
+full:goproxy.io
