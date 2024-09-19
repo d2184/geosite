@@ -3,6 +3,3 @@ connectivitycheck.platform.hicloud.com
 
 # Vivo Captive
 wifi.vivo.com.cn
-
-# Android Captive
-connectivitycheck.gstatic.com

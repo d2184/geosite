@@ -10,6 +10,7 @@ lxapk.com
 
 # Github 代理
 full:mirror.ghproxy.com
+full:ghp.ci
 
 # 金豆游戏厅
 full:jindouyxt.com
@@ -30,7 +31,3 @@ tapsvc.com
 
 # 华为天气
 full:hw.zuimeitianqi.com
-full:api.weathercn.com
-
-# Go 代理
-full:goproxy.io
