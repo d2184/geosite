@@ -107,6 +107,7 @@ gfx.ms
 gigjam.com
 hololens.com
 hotmail.co
+full:m.hotmail.com @cn
 hotmail.com
 hotmail.eu
 hotmail.net
@@ -125,6 +126,7 @@ iotinactionevents.com
 kidgrid.tv
 kumo.com
 latampartneruniversity.com
+full:login.live.com @cn
 live.com
 live.com.au
 live.eu
@@ -225,6 +227,8 @@ onmschina.cn @cn
 opticsforthecloud.net
 outingsapp.com
 outlook.cn @cn
+full:imap-mail.outlook.com @cn
+full:smtp-mail.outlook.com @cn
 outlook.com
 passport.net
 pbiwebcontent.cn @cn
