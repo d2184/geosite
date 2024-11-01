@@ -34,12 +34,12 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Checkout custom branch
+      - name: Checkout source branch
         uses: actions/checkout@v4
         with:
-          ref: custom
+          ref: source
           fetch-depth: 0
-          path: custom
+          path: source
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -49,18 +49,10 @@ jobs:
 
       - name: Get Data
         run: |
-          git clone https://github.com/v2fly/domain-list-community repo
-          mv repo/data ./ && rm -rf repo
-        shell: bash
-
-      - name: Append more domains
-        run: |
+          mv source/data ./ && rm -rf source
+          
           sed -i '/:@!cn/d' ./data/geolocation-cn
           sed -i '/:@cn/d' ./data/geolocation-\!cn
-          cat ./custom/direct.txt >> ./data/geolocation-cn
-          cat ./custom/outlook.txt >> ./data/microsoft
-          cat ./custom/captive.txt >> ./data/connectivity-check
-        shell: bash
 
       - name: Build
         run: |
@@ -78,7 +70,6 @@ jobs:
           ./converter geosite -f ./publish/geosite.dat -o ./mihomo
 
           cd mihomo && mkdir -p ./domain && mv -f ./*.list ./*.yaml ./domain/ && cd ..
-        shell: bash
 
       - name: Publish
         run: |
