@@ -25,3 +25,9 @@ full:connect.rom.miui.com
 # Windows
 msftconnecttest.com
 msftncsi.com
+
+# Huawei
+connectivitycheck.platform.hicloud.com
+
+# Vivo
+wifi.vivo.com.cn
