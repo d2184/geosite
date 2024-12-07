@@ -13,17 +13,21 @@ snssdk.com
 ttwebview.com
 tik-tokapi.com @!cn
 tiktok.com @!cn
+tiktokcdn-eu.com @!cn
 tiktokcdn-us.com @!cn
 tiktokcdn.com @!cn
 tiktokd.net @!cn
 tiktokd.org @!cn
 tiktokmusic.app
 tiktokv.com @!cn
+tiktokv.eu @!cn
 tiktokv.us @!cn
+tiktokw.eu @!cn
 tiktokw.us @!cn
+ttlivecdn.com @!cn
 ttwstatic.com @!cn
-keyword,musical.ly
-keyword,tiktok
+keyword:musical.ly
+keyword:tiktok
 
 full:p16-tiktokcdn-com.akamaized.net @!cn
 full:lf16-effectcdn.byteeffecttos-g.com
