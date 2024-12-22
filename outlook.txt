@@ -1,0 +1,6 @@
+full:m.hotmail.com @cn
+full:login.live.com @cn
+full:imap-mail.outlook.com @cn
+full:smtp-mail.outlook.com @cn
+full:outlook.office.com @cn
+full:outlook.office365.com @cn
