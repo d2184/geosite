@@ -1,0 +1,5 @@
+# Huawei
+connectivitycheck.platform.hicloud.com
+
+# Vivo
+wifi.vivo.com.cn
