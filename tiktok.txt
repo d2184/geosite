@@ -1,0 +1,15 @@
+byteintlapi.com @!cn
+bytegecko-i18n.com @!cn
+capcut.com @!cn
+ibytedtos.com @!cn
+ibyteimg.com @!cn
+ipstatp.com @!cn
+isnssdk.com @!cn
+sgpstatp.com @!cn
+snssdk.com @!cn
+ttwebview.com @!cn
+tiktokmusic.app @!cn
+keyword:tiktok @!cn
+full:lf16-effectcdn.byteeffecttos-g.com @!cn
+full:lf16-pkgcdn.pitaya-clientai.com @!cn
+full:trae-api-sg.mchost.guru @!cn
