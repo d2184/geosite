@@ -1,0 +1,7 @@
+full:m.hotmail.com
+full:login.live.com
+full:imap-mail.outlook.com
+full:smtp-mail.outlook.com
+full:outlook.office.com
+full:outlook.office365.com
+full:outlook.live.com
