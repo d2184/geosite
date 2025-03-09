@@ -1,0 +1,21 @@
+payload:
+    - DOMAIN,instant.arubanetworks.com
+    - DOMAIN,setmeup.arubanetworks.com
+    - DOMAIN,asusrouter.com
+    - DOMAIN,router.asus.com
+    - DOMAIN,www.asusrouter.com
+    - DOMAIN,oasisauth.h3c.com
+    - DOMAIN,routerlogin.com
+    - DOMAIN,www.routerlogin.com
+    - DOMAIN-SUFFIX,hiwifi.com
+    - DOMAIN-SUFFIX,leike.cc
+    - DOMAIN-SUFFIX,my.router
+    - DOMAIN-SUFFIX,peiluyou.com
+    - DOMAIN-SUFFIX,phicomm.me
+    - DOMAIN-SUFFIX,router.ctc
+    - DOMAIN-SUFFIX,tendawifi.com
+    - DOMAIN-SUFFIX,tplinkwifi.net
+    - DOMAIN,tplogin.cn
+    - DOMAIN,miwifi.com
+    - DOMAIN,www.miwifi.com
+    - DOMAIN-SUFFIX,zte.home
