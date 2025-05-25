@@ -1,0 +1,96 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 23 * * *"
+  push:
+    branches:
+      - main
+
+env: 
+  TZ: Asia/Shanghai
+
+concurrency: 
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  Build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Workflow runs delete
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 0
+          keep_minimum_runs: 2
+
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Checkout custom branch
+        uses: actions/checkout@v4
+        with:
+          ref: custom
+          fetch-depth: 0
+          path: custom
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          check-latest: true
+
+      - name: Get Data
+        run: |
+          git clone https://github.com/v2fly/domain-list-community repo
+          mv repo/data ./ && rm -rf repo
+        shell: bash
+
+      - name: Append more domains
+        run: |
+          sed -i '/:@!cn/d' ./data/geolocation-cn
+          sed -i '/:@cn/d' ./data/geolocation-\!cn
+          cat ./custom/captive.txt >> ./data/connectivity-check
+          cat ./custom/direct.txt >> ./data/geolocation-cn
+          cat ./custom/outlook.txt > ./data/outlook
+          cat ./custom/private.txt > ./data/private
+          cat ./custom/router.txt > ./data/router
+          cat ./custom/tiktok.txt >> ./data/tiktok
+        shell: bash
+
+      - name: Build
+        run: |
+          mkdir -p ./publish
+          go run ./ --outputdir=./publish/
+
+      - name: Generate sing-box and mihomo rule-set
+        run: |
+          curl -sSL https://github.com/d2184/convert-tools/releases/download/PreRealease-converter/converter-linux-amd64 -o ./converter && chmod +x ./converter
+
+          mkdir -p ./sing-box
+          ./converter geosite -f ./publish/geosite.dat -o ./sing-box -t sing-box
+
+          mkdir -p ./mihomo
+          ./converter geosite -f ./publish/geosite.dat -o ./mihomo
+
+          cd mihomo && mkdir -p ./domain && mv -f ./*.list ./*.yaml ./domain/ && cd ..
+        shell: bash
+
+      - name: Publish
+        run: |
+          mv -f ./sing-box ./mihomo ./publish/
+          cd publish || exit 1
+          git init --initial-branch=release
+          git config --local user.name "${{ github.actor }}"
+          git config --local user.email "${{ github.actor }}@users.noreply.github.com"
+          git add -A
+          git commit -m "Last Updated $(date '+%Y-%m-%d %H:%M:%S')"
+          git remote add geosite "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          git push -f -u geosite release
