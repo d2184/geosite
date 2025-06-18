@@ -55,8 +55,8 @@ jobs:
 
       - name: Append more domains
         run: |
-          sed -i '/:@!cn/d' ./data/geolocation-cn
-          sed -i '/:@cn/d' ./data/geolocation-\!cn
+          echo "googleapis.cn @cn" >> ./data/google
+          echo "xn--ngstr-lra8j.com @cn" >> ./data/google
           cat ./custom/captive.txt >> ./data/connectivity-check
           cat ./custom/direct.txt >> ./data/geolocation-cn
           cat ./custom/outlook.txt > ./data/outlook
