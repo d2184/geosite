@@ -29,41 +29,39 @@ jobs:
           keep_minimum_runs: 2
 
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: main
           fetch-depth: 0
 
       - name: Checkout custom branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: custom
           fetch-depth: 0
           path: custom
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
-          go-version: '1.24'
+          go-version: '1.25'
           check-latest: true
 
       - name: Get Data
         run: |
           git clone https://github.com/v2fly/domain-list-community repo
           mv repo/data ./ && rm -rf repo
-        shell: bash
 
       - name: Append more domains
         run: |
-          sed -i '/:@!cn/d' ./data/geolocation-cn
-          sed -i '/:@cn/d' ./data/geolocation-\!cn
+          echo "googleapis.cn @cn" >> ./data/google
+          echo "xn--ngstr-lra8j.com @cn" >> ./data/google
           cat ./custom/captive.txt >> ./data/connectivity-check
           cat ./custom/direct.txt >> ./data/geolocation-cn
           cat ./custom/outlook.txt > ./data/outlook
           cat ./custom/private.txt > ./data/private
           cat ./custom/router.txt > ./data/router
           cat ./custom/tiktok.txt >> ./data/tiktok
-        shell: bash
 
       - name: Build
         run: |
@@ -80,8 +78,9 @@ jobs:
           mkdir -p ./mihomo
           ./converter geosite -f ./publish/geosite.dat -o ./mihomo
 
-          cd mihomo && mkdir -p ./domain && mv -f ./*.list ./*.yaml ./domain/ && cd ..
-        shell: bash
+          cd mihomo 
+          mkdir -p ./domain
+          mv -f ./*.list ./*.yaml ./domain/
 
       - name: Publish
         run: |
