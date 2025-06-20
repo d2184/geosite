@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "rules": [
+    {
+      "domain": [
+        "instant.arubanetworks.com",
+        "setmeup.arubanetworks.com",
+        "asusrouter.com",
+        "router.asus.com",
+        "www.asusrouter.com",
+        "oasisauth.h3c.com",
+        "routerlogin.com",
+        "www.routerlogin.com",
+        "tplogin.cn",
+        "miwifi.com",
+        "www.miwifi.com"
+      ],
+      "domain_suffix": [
+        "hiwifi.com",
+        "leike.cc",
+        "my.router",
+        "peiluyou.com",
+        "phicomm.me",
+        "router.ctc",
+        "tendawifi.com",
+        "tplinkwifi.net",
+        "zte.home"
+      ]
+    }
+  ]
+}
