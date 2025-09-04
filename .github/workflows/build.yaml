@@ -29,13 +29,13 @@ jobs:
           keep_minimum_runs: 2
 
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: main
           fetch-depth: 0
 
       - name: Checkout custom branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: custom
           fetch-depth: 0
@@ -44,7 +44,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.24'
+          go-version: '1.25'
           check-latest: true
 
       - name: Get Data
