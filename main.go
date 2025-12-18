@@ -2,11 +2,11 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -20,6 +20,14 @@ var (
 	outputName  = flag.String("outputname", "geosite.dat", "Name of the generated dat file")
 	outputDir   = flag.String("outputdir", "./", "Directory to place all generated files")
 	exportLists = flag.String("exportlists", "", "Lists to be flattened and exported in plaintext format, separated by ',' comma")
+)
+
+const (
+	RuleTypeDomain     string = "domain"
+	RuleTypeFullDomain string = "full"
+	RuleTypeKeyword    string = "keyword"
+	RuleTypeRegexp     string = "regexp"
+	RuleTypeInclude    string = "include"
 )
 
 type Entry struct {
@@ -64,32 +72,37 @@ func (l *ParsedList) toProto() (*router.GeoSite, error) {
 	}
 	for _, entry := range l.Entry {
 		switch entry.Type {
-		case "domain":
+		case RuleTypeDomain:
 			site.Domain = append(site.Domain, &router.Domain{
 				Type:      router.Domain_RootDomain,
 				Value:     entry.Value,
 				Attribute: entry.Attrs,
 			})
-		case "regexp":
+		case RuleTypeRegexp:
+		  // check regexp validity to avoid runtime error
+			_, err := regexp.Compile(entry.Value)
+			if err != nil {
+				return nil, fmt.Errorf("invalid regexp in list %s: %s", l.Name, entry.Value)
+			}
 			site.Domain = append(site.Domain, &router.Domain{
 				Type:      router.Domain_Regex,
 				Value:     entry.Value,
 				Attribute: entry.Attrs,
 			})
-		case "keyword":
+		case RuleTypeKeyword:
 			site.Domain = append(site.Domain, &router.Domain{
 				Type:      router.Domain_Plain,
 				Value:     entry.Value,
 				Attribute: entry.Attrs,
 			})
-		case "full":
+		case RuleTypeFullDomain:
 			site.Domain = append(site.Domain, &router.Domain{
 				Type:      router.Domain_Full,
 				Value:     entry.Value,
 				Attribute: entry.Attrs,
 			})
 		default:
-			return nil, errors.New("unknown domain type: " + entry.Type)
+			return nil, fmt.Errorf("unknown domain type: %s", entry.Type)
 		}
 	}
 	return site, nil
@@ -99,7 +112,7 @@ func exportPlainTextList(list []string, refName string, pl *ParsedList) {
 	for _, listName := range list {
 		if strings.EqualFold(refName, listName) {
 			if err := pl.toPlainText(strings.ToLower(refName)); err != nil {
-				fmt.Println("Failed: ", err)
+				fmt.Println("Failed:", err)
 				continue
 			}
 			fmt.Printf("✅ '%s' has been generated successfully.\n", listName)
@@ -118,24 +131,28 @@ func removeComment(line string) string {
 func parseDomain(domain string, entry *Entry) error {
 	kv := strings.Split(domain, ":")
 	if len(kv) == 1 {
-		entry.Type = "domain"
+		entry.Type = RuleTypeDomain
 		entry.Value = strings.ToLower(kv[0])
 		return nil
 	}
 
 	if len(kv) == 2 {
 		entry.Type = strings.ToLower(kv[0])
-		entry.Value = strings.ToLower(kv[1])
+		if strings.EqualFold(entry.Type, RuleTypeRegexp) {
+			entry.Value = kv[1]
+		} else {
+			entry.Value = strings.ToLower(kv[1])
+		}
 		return nil
 	}
 
-	return errors.New("Invalid format: " + domain)
+	return fmt.Errorf("invalid format: %s", domain)
 }
 
 func parseAttribute(attr string) (*router.Domain_Attribute, error) {
 	var attribute router.Domain_Attribute
 	if len(attr) == 0 || attr[0] != '@' {
-		return &attribute, errors.New("invalid attribute: " + attr)
+		return &attribute, fmt.Errorf("invalid attribute: %s", attr)
 	}
 
 	// Trim attribute prefix `@` character
@@ -148,7 +165,7 @@ func parseAttribute(attr string) (*router.Domain_Attribute, error) {
 		attribute.Key = strings.ToLower(parts[0])
 		intv, err := strconv.Atoi(parts[1])
 		if err != nil {
-			return &attribute, errors.New("invalid attribute: " + attr + ": " + err.Error())
+			return &attribute, fmt.Errorf("invalid attribute: %s: %v", attr, err)
 		}
 		attribute.TypedValue = &router.Domain_Attribute_IntValue{IntValue: int64(intv)}
 	}
@@ -161,7 +178,7 @@ func parseEntry(line string) (Entry, error) {
 
 	var entry Entry
 	if len(parts) == 0 {
-		return entry, errors.New("empty entry")
+		return entry, fmt.Errorf("empty entry")
 	}
 
 	if err := parseDomain(parts[0], &entry); err != nil {
@@ -255,7 +272,7 @@ func ParseList(list *List, ref map[string]*List) (*ParsedList, error) {
 		newEntryList := make([]Entry, 0, len(entryList))
 		hasInclude := false
 		for _, entry := range entryList {
-			if entry.Type == "include" {
+			if entry.Type == RuleTypeInclude {
 				refName := strings.ToUpper(entry.Value)
 				if entry.Attrs != nil {
 					for _, attr := range entry.Attrs {
@@ -267,7 +284,7 @@ func ParseList(list *List, ref map[string]*List) (*ParsedList, error) {
 
 						refList := ref[refName]
 						if refList == nil {
-							return nil, errors.New(entry.Value + " not found.")
+							return nil, fmt.Errorf("list not found: %s", entry.Value)
 						}
 						attrEntrys := createIncludeAttrEntrys(refList, attr)
 						if len(attrEntrys) != 0 {
@@ -282,7 +299,7 @@ func ParseList(list *List, ref map[string]*List) (*ParsedList, error) {
 					pl.Inclusion[InclusionName] = true
 					refList := ref[refName]
 					if refList == nil {
-						return nil, errors.New(entry.Value + " not found.")
+						return nil, fmt.Errorf("list not found: %s", entry.Value)
 					}
 					newEntryList = append(newEntryList, refList.Entry...)
 				}
