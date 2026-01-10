@@ -26,7 +26,7 @@ jobs:
           token: ${{ github.token }}
           repository: ${{ github.repository }}
           retain_days: 0
-          keep_minimum_runs: 2
+          keep_minimum_runs: 3
 
       - name: Checkout Repo
         uses: actions/checkout@v6
@@ -41,19 +41,22 @@ jobs:
           fetch-depth: 0
           path: custom
 
+      - name: Checkout upstream
+        uses: actions/checkout@v6
+        with:
+          repository: v2fly/domain-list-community
+          ref: master
+          path: repo
+
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
           go-version: '1.25'
           check-latest: true
 
-      - name: Get Data
-        run: |
-          git clone https://github.com/v2fly/domain-list-community repo
-          mv repo/data ./ && rm -rf repo
-
       - name: Append more domains
         run: |
+          mv repo/data ./ && rm -rf repo
           echo "googleapis.cn @cn" >> ./data/google
           echo "xn--ngstr-lra8j.com @cn" >> ./data/google
           cat ./custom/captive.txt >> ./data/connectivity-check
