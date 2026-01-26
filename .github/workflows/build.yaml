@@ -6,7 +6,7 @@ on:
     - cron: "30 23 * * *"
   push:
     branches:
-      - main
+      - master
 
 env: 
   TZ: Asia/Shanghai
@@ -31,7 +31,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v6
         with:
-          ref: main
+          ref: master
           fetch-depth: 0
 
       - name: Checkout custom branch
