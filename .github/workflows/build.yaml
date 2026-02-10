@@ -57,8 +57,8 @@ jobs:
       - name: Append more domains
         run: |
           mv repo/data ./ && rm -rf repo
-          echo "googleapis.cn @cn" >> ./data/google
-          echo "xn--ngstr-lra8j.com @cn" >> ./data/google
+          sed -i '/^googleapis\.cn$/s/$/ @cn/' ./data/google
+          echo "full:lens.l.google.com" >> ./data/google
           cat ./custom/captive.txt >> ./data/connectivity-check
           cat ./custom/direct.txt >> ./data/geolocation-cn
           cat ./custom/outlook.txt > ./data/outlook
