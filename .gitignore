@@ -1,0 +1,12 @@
+.idea
+.vscode
+
+/domain-list-community
+/domain-list-community.exe
+
+# Generated dat files.
+/*.dat
+
+# Exported plaintext lists.
+/*.txt
+/*.yml
