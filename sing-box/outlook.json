@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "rules": [
+    {
+      "domain": [
+        "imap-mail.outlook.com",
+        "login.live.com",
+        "m.hotmail.com",
+        "outlook.live.com",
+        "outlook.office.com",
+        "outlook.office365.com",
+        "smtp-mail.outlook.com"
+      ]
+    }
+  ]
+}
