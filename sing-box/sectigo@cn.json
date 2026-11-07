@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "rules": [
+    {
+      "domain_suffix": [
+        "oemssl.cn.cdn.cloudflare.net",
+        "oemssl.cn",
+        "sectigochina.com.cdn.cloudflare.net",
+        "sectigochina.com",
+        "trust-provider.cn"
+      ]
+    }
+  ]
+}
